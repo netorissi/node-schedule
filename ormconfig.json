@@ -4,5 +4,11 @@
   "port": 5432,
   "username": "postgres",
   "password": "neto",
-  "database": "go_barber"
+  "database": "go_barber",
+  "migrations": [
+    "./src/database/migrations/*.ts"
+  ],
+  "cli": {
+    "migrationsDir": "./src/database/migrations"
+  }
 }
