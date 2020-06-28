@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
+
 import authConfig from '../config/authenticator';
+import AppError from '../errors/AppError';
 
 interface TokenPayload {
   iat: number;
@@ -15,7 +17,7 @@ export default function Authenticator(
 ): void {
   const { authorization } = request.headers;
 
-  if (!authorization) throw new Error('Authetication failed.');
+  if (!authorization) throw new AppError('Authetication failed.');
 
   const [, token] = authorization.split(' ');
 
@@ -28,6 +30,6 @@ export default function Authenticator(
       id: sub,
     };
   } catch {
-    throw new Error('Invalid authentication');
+    throw new AppError('Invalid authentication', 401);
   }
 }

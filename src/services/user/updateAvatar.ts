@@ -2,6 +2,7 @@ import { getRepository } from 'typeorm';
 import path from 'path';
 import fs from 'fs';
 
+import AppError from '../../errors/AppError';
 import uploadConfig from '../../config/upload';
 import User from '../../models/User';
 
@@ -12,11 +13,11 @@ interface Request {
 
 export default class UpdateAvatar {
   public async execute({ user_id, avatar_name }: Request): Promise<User> {
-    const userRepository = getRepository(User);
-    const user = userRepository.findOne(user_id);
+    const usersRepository = getRepository(User);
+    const user = await usersRepository.findOne(user_id);
 
     if (!user) {
-      throw new Error('[ERROR] Change avatar - User not found.');
+      throw new AppError('Only authenticated users can change avatar.', 401);
     }
 
     if (user.avatar) {
@@ -26,12 +27,11 @@ export default class UpdateAvatar {
       if (avatarExists) {
         await fs.promises.unlink(userAvatar);
       }
-
-      user.avatar = avatar_name;
-
-      await userRepository.save(user);
-
-      return user;
     }
+
+    user.avatar = avatar_name;
+
+    await usersRepository.save(user);
+    return user;
   }
 }
