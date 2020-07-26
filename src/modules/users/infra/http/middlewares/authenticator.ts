@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verify } from 'jsonwebtoken';
 
-import authConfig from '../../config/authenticator';
-import AppError from '../errors/AppError';
+import authConfig from '@config/authenticator';
+import AppError from '@shared/errors/AppError';
 
 interface TokenPayload {
   iat: number;
@@ -12,8 +12,8 @@ interface TokenPayload {
 
 export default function Authenticator(
   request: Request,
-  response: Response,
-  next: NextFunction,
+  response: Response, // eslint-disable-line
+  next: NextFunction, // eslint-disable-line
 ): void {
   const { authorization } = request.headers;
 
