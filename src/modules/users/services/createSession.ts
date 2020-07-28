@@ -1,7 +1,7 @@
-import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { inject, injectable } from 'tsyringe';
 
+import IHashProvider from '@modules/users/providers/HashProvider/models/IHashProvider';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
 import AppError from '@shared/errors/AppError';
 import authConfig from '@config/authenticator';
@@ -22,6 +22,7 @@ class CreateSession {
   constructor(
     @inject('UsersRepository')
     private usersRepository: IUsersRepository,
+    private hashProvider: IHashProvider,
   ) {}
 
   public async execute({ email, password }: IRequest): Promise<IResponse> {
@@ -29,7 +30,10 @@ class CreateSession {
 
     if (!user) throw new AppError('Invalid email or password.', 401);
 
-    const passwordMatch = await compare(password, user.password);
+    const passwordMatch = await this.hashProvider.compareHash(
+      password,
+      user.password,
+    );
 
     if (!passwordMatch) throw new AppError('Invalid email or password.', 401);
 
